@@ -1,0 +1,109 @@
+/* -------------------  MOBILE  --------------------- */
+
+body {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  font-family: Arial;
+  min-height: 100vh;
+}
+
+main {
+  flex: 1;
+  justify-content: center;
+  margin: 0 auto;
+  text-align: center;
+  max-width: 1600px;
+  padding: 12px;
+}
+
+header {
+  margin: 15px auto 10px;
+  text-align: center;
+}
+
+header h1 {
+  font-size: 28px;
+  font-weight: 600;
+  margin-bottom: 25px;
+}
+
+.navlink {
+  background-color: inherit;
+  padding: 10px;
+  margin: 0 4px 10px;
+  transition: 0.3s;
+  font-size: 16px;
+}
+
+.navlink:hover {
+  background-color: #f1f1f1;
+}
+
+.navlink.active {
+  background-color: #eee;
+}
+
+.content-container {
+  margin: 0 auto;
+  padding: 20px;
+  text-align: center;
+}
+
+.content-container h3 {
+  font-size: 22px;
+  font-weight: bold;
+  margin-bottom: 16px;
+}
+
+.content-container p {
+  margin: 14px auto;
+}
+
+.images-container {
+  display: grid;
+  grid-template-columns: auto;
+  justify-content: center;
+}
+
+.images-container img {
+  width: 100%;
+  padding: 8px;
+}
+
+footer {
+  margin: 0 auto;
+  padding: 20px 0 0;
+  text-align: center;
+}
+
+/* -------------------  TABLET  --------------------- */
+@media (min-width: 768px) {
+  header h1 {
+    font-size: 32px;
+  }
+
+  .navlink {
+    background-color: inherit;
+    padding: 10px 14px;
+    margin: 0 6px 0;
+    transition: 0.3s;
+    font-size: 16px;
+  }
+
+  .images-container {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+/* -------------------  DESKTOP  -------------------- */
+
+@media (min-width: 1224px) {
+  /* use mobile */
+}
+
+/* -------------------  LARGE SCREENS  -------------- */
+
+@media (min-width: 1824px) {
+  /* use mobile */
+}
