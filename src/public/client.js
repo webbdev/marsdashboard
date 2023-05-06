@@ -1,18 +1,17 @@
-let store = {
-    project_name: 'Mars Rover Dashboard',
-    rovers: Immutable.List(['Curiosity', 'Opportunity', 'Spirit']),
+let store = Immutable.Map({
+    project_name: Immutable.Map({ name: 'Mars Rover Dashboard' }),
+    rovers: ["Curiosity", "Opportunity", "Spirit"],
     selected_rover: '' ? '' : 'Curiosity',
-    rover_data: {},
-    mars_rover_photos: [],
-    copyright: "&copy; 2023"
-}
+    rover_name: '',
+    footer: Immutable.Map({ copyright: '&copy; 2023' })
+})
 
 // add our markup to the page
-const root = document.getElementById('root')
+const root = document.getElementById("root")
 
 const updateStore = (store, newState) => {
-    newStore = Object.assign(store, newState)
-    render(root, newStore);
+    store = Object.assign(store, newState)
+    render(root, store)
 }
 
 const render = async (root, state) => {
@@ -21,46 +20,41 @@ const render = async (root, state) => {
 
 // create content
 const App = (state) => {
-    let { project_name, rovers, rover_data, mars_rover_photos, copyright } = state
-
     return `
         <header>
-            ${Heading(project_name)}
-            ${Navbar(rovers)}
+            ${Heading(store.get("project_name").get("name"))}
+            ${Navbar(store.get("rovers"))}
         </header>
-        <section>
-            ${rover_data.hasOwnProperty('data') ? RoverDataContent(rover_data) : ''}
-            ${mars_rover_photos.hasOwnProperty('photos') ? Images(mars_rover_photos) : ''}
+        <section id="content">
+            ${RoverDataContent(state)}
+            ${RoverImages(state)}
         </section>
         <footer>
-            ${Footer(copyright)}
-        </footer>
-    `
+            ${Footer(store.get("footer").get("copyright"))}
+        </footer>    
+    `  
 }
 
 // listening for load event because page should load before any JS is called
-window.addEventListener('load', async () => {
-    getRoverData(store.selected_rover)
-    getMarsPhotos(store.selected_rover)
-    render(root, store)
+window.addEventListener("load", () => {
+    getRoverData("Curiosity")
+    getRoverData("Opportunity")
+    getRoverData("Spirit")
 })
 
 window.addEventListener('click', (event) => {
     if (event.target.type === 'button') {
         const rover = event.target.innerText
-        updateStore(store, {selected_rover: rover})
         getRoverData(rover)
-        getMarsPhotos(rover)
-    }
+    } 
 })
-
 
 // ------------------------------------------------------  COMPONENTS
 
 // Add Project Name
-const Heading = (project_name) => {
+const Heading = (name) => {
     return `
-        <h1>${project_name}</h1>
+        <h1>${name}</h1>
     `
 }
 
@@ -78,25 +72,25 @@ const Navbar = (rovers) => {
 }
 
 // Add Rover Data
-const RoverDataContent = (rover_data) => {
-    rover_data = rover_data.data.rover
+const RoverDataContent = (state) => {
+    const roverData = state.photos
 
     return `
-        <div class="content-container" id="${rover_data.name}">
-            <h3>${rover_data.name}</h3>
-            <p>Launch Date: ${rover_data.launch_date}</p>
-            <p>Landing Date: ${rover_data.landing_date}</p>
-            <p>Status: ${rover_data.status}</p>
+        <div class="content-container">
+            <h3>${roverData[0].rover.name}</h3>
+            <p>Launch Date: ${roverData[0].rover.launch_date}</p>
+            <p>Landing Date: ${roverData[0].rover.landing_date}</p>
+            <p>Status: ${roverData[0].rover.status}</p>
         </div>
     `
-}
+};
 
 // Add Mars Rover Photos
-const Images = (mars_rover_photos) => {
-    mars_rover_photos = mars_rover_photos.photos.photos;
-
+const RoverImages = (state) => {
+    const roverData = () => state.photos
+ 
     return `<div class="images-container">
-            ${mars_rover_photos.slice(0, 10).map((photo) => (
+            ${roverData().slice(0, 10).map(photo => (
                 `<img src="${photo.img_src}">`
             )).join('')}
         </div>
@@ -111,16 +105,14 @@ const Footer = (copyright) => {
 }
 
 // ------------------------------------------------------  API CALLS
-const getRoverData = (rover) => {
-    fetch(`http://localhost:3000/rover-data/${rover}`)
+const getRoverData = (rover_name) => {
+    fetch(`http://localhost:3000/rovers/${rover_name}`)
         .then(res => res.json())
-        .then(rover_data => updateStore(store, { rover_data }))
-}
-
-const getMarsPhotos = (rover) => {
-    fetch(`http://localhost:3000/rovers/${rover}`)
-        .then(res => res.json())
-        .then(mars_rover_photos => updateStore(store, { mars_rover_photos }))
+        .then((roverData) => {
+            const photos = roverData.photos
+            updateStore(store, { photos })
+            render(root, store)
+        });
 }
 
 // Example API call
